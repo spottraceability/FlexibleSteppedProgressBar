@@ -15,7 +15,9 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
     var progressBarWithoutLastState: FlexibleSteppedProgressBar!
     var progressBarWithDifferentDimensions: FlexibleSteppedProgressBar!
     
-    var backgroundColor = UIColor(red: 218.0 / 255.0, green: 218.0 / 255.0, blue: 218.0 / 255.0, alpha: 1.0)
+    var lightBackground = UIColor(red: 218.0 / 255.0, green: 218.0 / 255.0, blue: 218.0 / 255.0, alpha: 1.0)
+    var backgroundColor = UIColor.clear
+
     var progressColor = UIColor(red: 53.0 / 255.0, green: 226.0 / 255.0, blue: 195.0 / 255.0, alpha: 1.0)
     var textColorHere = UIColor(red: 153.0 / 255.0, green: 153.0 / 255.0, blue: 153.0 / 255.0, alpha: 1.0)
     
@@ -23,9 +25,14 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.backgroundColor = self.view.backgroundColor ?? .clear
+        
         setupProgressBar()
         setupProgressBarWithoutLastState()
         setupProgressBarWithDifferentDimensions()
+        
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -82,19 +89,25 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         
         progressBarWithDifferentDimensions.numberOfPoints = 5
         progressBarWithDifferentDimensions.lineHeight = 3
-        progressBarWithDifferentDimensions.radius = 6
-        progressBarWithDifferentDimensions.progressRadius = 11
+        progressBarWithDifferentDimensions.radius = 25 //15
+        progressBarWithDifferentDimensions.progressRadius = 25 //11
         progressBarWithDifferentDimensions.progressLineHeight = 3
         progressBarWithDifferentDimensions.delegate = self
-        progressBarWithDifferentDimensions.useLastState = true
-        progressBarWithDifferentDimensions.lastStateCenterColor = progressColor
-        progressBarWithDifferentDimensions.selectedBackgoundColor = progressColor
-        progressBarWithDifferentDimensions.selectedOuterCircleStrokeColor = backgroundColor
-        progressBarWithDifferentDimensions.lastStateOuterCircleStrokeColor = backgroundColor
-        progressBarWithDifferentDimensions.currentSelectedCenterColor = progressColor
+        progressBarWithDifferentDimensions.useLastState = false
+        progressBarWithDifferentDimensions.lastStateCenterColor = UIColor.green
+        progressBarWithDifferentDimensions.selectedBackgoundColor = UIColor.lightGray
+        progressBarWithDifferentDimensions.selectedOuterCircleStrokeColor = lightBackground
+        progressBarWithDifferentDimensions.selectedOuterCircleLineWidth = 5
+        progressBarWithDifferentDimensions.currentSelectedCenterColor = lightBackground
         progressBarWithDifferentDimensions.stepTextColor = textColorHere
-        progressBarWithDifferentDimensions.currentSelectedTextColor = progressColor
+        progressBarWithDifferentDimensions.centerLayerTextColor = UIColor.clear
+        progressBarWithDifferentDimensions.centerLayerDarkBackgroundTextColor = UIColor.clear
+        progressBarWithDifferentDimensions.currentSelectedTextColor = UIColor.black
         progressBarWithDifferentDimensions.completedTillIndex = 0
+        progressBarWithDifferentDimensions.centerLayerTextFont = UIFont(name: "AvenirNext-Regular", size: 40)
+        progressBarWithDifferentDimensions.selectedTextFont = UIFont(name: "AvenirNext-DemiBold", size: 16)
+        progressBarWithDifferentDimensions.stepTextFont = UIFont(name: "AvenirNext-Regular", size: 16)
+
     }
     
     func setupProgressBar() {
@@ -146,6 +159,18 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         return true
     }
     
+    func progressBar(_ progressBar: FlexibleSteppedProgressBar, selectedTextAtIndex index: Int, position: FlexibleSteppedProgressBarTextLocation) -> UIImage? {
+        
+        if progressBar == self.progressBarWithDifferentDimensions  {
+            if position == FlexibleSteppedProgressBarTextLocation.center {
+                let image = UIImage(named: "truck")
+                return image
+            }
+        }
+        
+        return nil
+    }
+    
     func progressBar(_ progressBar: FlexibleSteppedProgressBar,
                      textAtIndex index: Int, position: FlexibleSteppedProgressBarTextLocation) -> String {
         if progressBar == self.progressBar || progressBar == self.progressBarWithoutLastState {
@@ -184,19 +209,24 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
                     
                 }
             }
-        } else if progressBar == progressBarWithDifferentDimensions {
+        }
+        else if progressBar == progressBarWithDifferentDimensions {
             if position == FlexibleSteppedProgressBarTextLocation.bottom {
                 switch index {
                     
-                case 0: return "First"
-                case 1: return "Second"
-                case 2: return "Third"
-                case 3: return "Fourth"
-                case 4: return "Fifth"
-                default: return "Date"
+                case 0: return "Picked"
+                case 1: return "Loaded"
+                case 2: return "Shipping"
+                case 3: return "Receiving"
+                default: return "Picked"
                     
                 }
             }
+            else if position == FlexibleSteppedProgressBarTextLocation.center {
+                return "\(index)"
+            }
+            
+            
         }
         return ""
     }

@@ -24,6 +24,9 @@ import CoreGraphics
     @objc optional func progressBar(_ progressBar: FlexibleSteppedProgressBar,
                               textAtIndex index: Int, position: FlexibleSteppedProgressBarTextLocation) -> String
     
+    @objc optional func progressBar(_ progressBar: FlexibleSteppedProgressBar, selectedTextAtIndex index: Int, position: FlexibleSteppedProgressBarTextLocation) -> UIImage?
+
+    
 }
 
 @IBDesignable open class FlexibleSteppedProgressBar: UIView {
@@ -61,6 +64,7 @@ import CoreGraphics
     
     @objc open var currentSelectedCenterColor: UIColor = UIColor.black
     @objc open var currentSelectedTextColor: UIColor!
+    @objc open var currentSelectedCenterTextColor: UIColor! = UIColor.black
     @objc open var viewBackgroundColor: UIColor = UIColor.white
     @objc open var selectedOuterCircleStrokeColor: UIColor!
     @objc open var lastStateOuterCircleStrokeColor: UIColor!
@@ -180,6 +184,13 @@ import CoreGraphics
         }
     }
     
+    /// the selected text font
+    @objc open var selectedTextFont: UIFont? {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+    
     /// The text color in the step points
     @objc open var stepTextColor: UIColor? {
         didSet {
@@ -288,6 +299,10 @@ import CoreGraphics
         
         if stepTextFont == nil {
             stepTextFont = UIFont(name: "HelveticaNeue-Medium", size: 14.0)
+        }
+        
+        if selectedTextFont == nil {
+            selectedTextFont = UIFont(name: "HelveticaNeue-Medium", size: 16.0)
         }
         
         if centerLayerTextFont == nil {
@@ -464,9 +479,17 @@ import CoreGraphics
                 textLayer.string = "\(i)"
             }
             
+            if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .center), i < currentIndex {
+                textLayer.contents = image.cgImage
+                textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
+            }
+            
+        
             textLayer.sizeWidthToFit()
             
             textLayer.frame = CGRect(x: centerPoint.x - textLayer.bounds.width/2, y: centerPoint.y - textLayer.bounds.height/2, width: textLayer.bounds.width, height: textLayer.bounds.height)
+            
+            print("here")
         }
     }
     
@@ -482,14 +505,14 @@ import CoreGraphics
             
             textLayer.contentsScale = UIScreen.main.scale
             
-            textLayer.font = stepTextFont
-            textLayer.fontSize = (stepTextFont?.pointSize)!
-            
-            
             if i == currentIndex {
+                textLayer.font = selectedTextFont
+                textLayer.fontSize = (selectedTextFont?.pointSize)!
                 textLayer.foregroundColor = currentSelectedTextColor.cgColor
             } else {
                 textLayer.foregroundColor = stepTextColor!.cgColor
+                textLayer.font = stepTextFont
+                textLayer.fontSize = (stepTextFont?.pointSize)!
             }
             
             
@@ -497,6 +520,11 @@ import CoreGraphics
                 textLayer.string = text
             } else {
                 textLayer.string = "\(i)"
+            }
+            
+            if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .top), i < currentIndex {
+                            textLayer.contents = image.cgImage
+                textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
             }
             
             textLayer.sizeWidthToFit()
@@ -514,12 +542,15 @@ import CoreGraphics
             
             textLayer.contentsScale = UIScreen.main.scale
             
-            textLayer.font = stepTextFont
-            textLayer.fontSize = (stepTextFont?.pointSize)!
-            
             if i == currentIndex {
+                textLayer.font = selectedTextFont
+                textLayer.fontSize = (selectedTextFont?.pointSize)!
+
                 textLayer.foregroundColor = currentSelectedTextColor.cgColor
             } else {
+                textLayer.font = stepTextFont
+                textLayer.fontSize = (stepTextFont?.pointSize)!
+                
                 textLayer.foregroundColor = stepTextColor!.cgColor
             }
             
@@ -527,6 +558,11 @@ import CoreGraphics
                 textLayer.string = text
             } else {
                 textLayer.string = "\(i)"
+            }
+            
+            if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .bottom), i < currentIndex {
+                            textLayer.contents = image.cgImage
+                textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
             }
             
             textLayer.sizeWidthToFit()
