@@ -71,7 +71,11 @@ import CoreGraphics
     @objc open var lastStateCenterColor: UIColor!
     @objc open var centerLayerTextColor: UIColor!
     @objc open var centerLayerDarkBackgroundTextColor: UIColor = UIColor.white
-    @objc open var progressIsAllDone: Bool = false
+    @objc open var progressIsAllDone: Bool = false {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
     
     @objc open var useLastState: Bool = false {
         didSet {
@@ -428,6 +432,7 @@ import CoreGraphics
         self.renderBottomTextIndexes()
         self.renderTextIndexes()
         
+        
         let progressCenterPoints = Array<CGPoint>(centerPoints[0..<(completedTillIndex+1)])
         
         
@@ -436,28 +441,8 @@ import CoreGraphics
             let maskPath = self._maskPath(currentProgressCenterPoint)
             maskLayer.path = maskPath.cgPath
             
-            CATransaction.begin()
-            let progressAnimation = CABasicAnimation(keyPath: "path")
-            progressAnimation.duration = 0.01
-            progressAnimation.toValue = maskPath
-            progressAnimation.isRemovedOnCompletion = false
-            progressAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-            
-            
-            CATransaction.setCompletionBlock { () -> Void in
-                //if(self.animationRendering) {
-                    if let delegate = self.delegate {
-                        delegate.progressBar?(self, didSelectItemAtIndex: self.currentIndex)
-                    }
-                    self.animationRendering = false
-                //}
-            }
-            
-            maskLayer.add(progressAnimation, forKey: "progressAnimation")
-            CATransaction.commit()
         }
-        
-        
+    
         self.previousIndex = self.currentIndex
     }
     

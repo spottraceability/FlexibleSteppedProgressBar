@@ -28,13 +28,19 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         
         self.backgroundColor = self.view.backgroundColor ?? .clear
         
-        setupProgressBar()
-        setupProgressBarWithoutLastState()
-        setupProgressBarWithDifferentDimensions()
+        //setupProgressBar()
+        //setupProgressBarWithoutLastState()
         
+        setupProgressBarWithDifferentDimensions()
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.progressBarWithDifferentDimensions.setNeedsDisplay()
+    }
+        
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -107,10 +113,9 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         progressBarWithDifferentDimensions.centerLayerTextFont = UIFont(name: "AvenirNext-Regular", size: 40)
         progressBarWithDifferentDimensions.selectedTextFont = UIFont(name: "AvenirNext-DemiBold", size: 16)
         progressBarWithDifferentDimensions.stepTextFont = UIFont(name: "AvenirNext-Regular", size: 16)
-        //progressBarWithDifferentDimensions.progressIsAllDone = true
+        progressBarWithDifferentDimensions.progressIsAllDone = true
         
-        progressBarWithDifferentDimensions.currentIndex = 0
-        
+        progressBarWithDifferentDimensions.currentIndex = 4
         
     }
     
