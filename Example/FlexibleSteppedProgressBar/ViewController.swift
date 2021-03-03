@@ -95,7 +95,7 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         progressBarWithDifferentDimensions.delegate = self
         progressBarWithDifferentDimensions.useLastState = false
         progressBarWithDifferentDimensions.lastStateCenterColor = UIColor.green
-        progressBarWithDifferentDimensions.selectedBackgoundColor = UIColor.lightGray
+        progressBarWithDifferentDimensions.selectedBackgoundColor = UIColor.green
         progressBarWithDifferentDimensions.selectedOuterCircleStrokeColor = lightBackground
         progressBarWithDifferentDimensions.selectedOuterCircleLineWidth = 5
         progressBarWithDifferentDimensions.currentSelectedCenterColor = lightBackground
@@ -107,7 +107,11 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         progressBarWithDifferentDimensions.centerLayerTextFont = UIFont(name: "AvenirNext-Regular", size: 40)
         progressBarWithDifferentDimensions.selectedTextFont = UIFont(name: "AvenirNext-DemiBold", size: 16)
         progressBarWithDifferentDimensions.stepTextFont = UIFont(name: "AvenirNext-Regular", size: 16)
-
+        //progressBarWithDifferentDimensions.progressIsAllDone = true
+        
+        progressBarWithDifferentDimensions.currentIndex = 0
+        
+        
     }
     
     func setupProgressBar() {
@@ -147,11 +151,14 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
     
     func progressBar(_ progressBar: FlexibleSteppedProgressBar,
                      didSelectItemAtIndex index: Int) {
+        
         progressBar.currentIndex = index
         if index > maxIndex {
             maxIndex = index
-            progressBar.completedTillIndex = maxIndex
         }
+        
+        
+        
     }
     
     func progressBar(_ progressBar: FlexibleSteppedProgressBar,

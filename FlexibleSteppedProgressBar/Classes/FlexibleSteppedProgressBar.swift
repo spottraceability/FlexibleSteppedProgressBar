@@ -71,6 +71,7 @@ import CoreGraphics
     @objc open var lastStateCenterColor: UIColor!
     @objc open var centerLayerTextColor: UIColor!
     @objc open var centerLayerDarkBackgroundTextColor: UIColor = UIColor.white
+    @objc open var progressIsAllDone: Bool = false
     
     @objc open var useLastState: Bool = false {
         didSet {
@@ -368,22 +369,27 @@ import CoreGraphics
             progressLayer.path = progressPath.cgPath
             progressLayer.fillColor = selectedBackgoundColor.cgColor
             
-            let clearSelectedRadius = fmax(_progressRadius, _progressRadius + selectedOuterCircleLineWidth)
-            let clearSelectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: clearSelectedRadius)
-            clearSelectionLayer.path = clearSelectedPath.cgPath
-            clearSelectionLayer.fillColor = viewBackgroundColor.cgColor
-            
-            let selectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: _radius)
-            selectionLayer.path = selectedPath.cgPath
-            selectionLayer.fillColor = currentSelectedCenterColor.cgColor
+            if !progressIsAllDone {
+                let clearSelectedRadius = fmax(_progressRadius, _progressRadius + selectedOuterCircleLineWidth)
+                let clearSelectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: clearSelectedRadius)
+                clearSelectionLayer.path = clearSelectedPath.cgPath
+                clearSelectionLayer.fillColor = viewBackgroundColor.cgColor
+                
+                let selectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: _radius)
+                selectionLayer.path = selectedPath.cgPath
+                selectionLayer.fillColor = currentSelectedCenterColor.cgColor
+            }
 
             if !useLastState {
                 let selectedPathCenter = self._shapePathForSelectedPathCenter(self.centerPoints[currentIndex], aRadius: _progressRadius)
-                selectionCenterLayer.path = selectedPathCenter.cgPath
-                selectionCenterLayer.strokeColor = selectedOuterCircleStrokeColor.cgColor
-                selectionCenterLayer.fillColor = UIColor.clear.cgColor
-                selectionCenterLayer.lineWidth = selectedOuterCircleLineWidth
-                selectionCenterLayer.strokeEnd = 1.0
+                
+                if !progressIsAllDone {
+                    selectionCenterLayer.path = selectedPathCenter.cgPath
+                    selectionCenterLayer.strokeColor = selectedOuterCircleStrokeColor.cgColor
+                    selectionCenterLayer.fillColor = UIColor.clear.cgColor
+                    selectionCenterLayer.lineWidth = selectedOuterCircleLineWidth
+                    selectionCenterLayer.strokeEnd = 1.0
+                }
             } else {
                 let selectedPathCenter = self._shapePathForSelectedPathCenter(self.centerPoints[currentIndex], aRadius: _progressRadius + selectedOuterCircleLineWidth)
                 selectionCenterLayer.path = selectedPathCenter.cgPath
@@ -424,6 +430,7 @@ import CoreGraphics
         
         let progressCenterPoints = Array<CGPoint>(centerPoints[0..<(completedTillIndex+1)])
         
+        
         if let currentProgressCenterPoint = progressCenterPoints.last {
             
             let maskPath = self._maskPath(currentProgressCenterPoint)
@@ -431,24 +438,26 @@ import CoreGraphics
             
             CATransaction.begin()
             let progressAnimation = CABasicAnimation(keyPath: "path")
-            progressAnimation.duration = stepAnimationDuration * CFTimeInterval(abs(completedTillIndex - previousIndex))
+            progressAnimation.duration = 0.01
             progressAnimation.toValue = maskPath
             progressAnimation.isRemovedOnCompletion = false
             progressAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
             
             
             CATransaction.setCompletionBlock { () -> Void in
-                if(self.animationRendering) {
+                //if(self.animationRendering) {
                     if let delegate = self.delegate {
                         delegate.progressBar?(self, didSelectItemAtIndex: self.currentIndex)
                     }
                     self.animationRendering = false
-                }
+                //}
             }
             
             maskLayer.add(progressAnimation, forKey: "progressAnimation")
             CATransaction.commit()
         }
+        
+        
         self.previousIndex = self.currentIndex
     }
     
@@ -479,17 +488,19 @@ import CoreGraphics
                 textLayer.string = "\(i)"
             }
             
-            if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .center), i < currentIndex {
-                textLayer.contents = image.cgImage
-                textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
+            if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .center) {
+                
+                if i < currentIndex || progressIsAllDone {
+                    textLayer.string = " "
+                    textLayer.contents = image.cgImage
+                    textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
+                }
             }
             
         
             textLayer.sizeWidthToFit()
             
             textLayer.frame = CGRect(x: centerPoint.x - textLayer.bounds.width/2, y: centerPoint.y - textLayer.bounds.height/2, width: textLayer.bounds.width, height: textLayer.bounds.height)
-            
-            print("here")
         }
     }
     
@@ -542,7 +553,7 @@ import CoreGraphics
             
             textLayer.contentsScale = UIScreen.main.scale
             
-            if i == currentIndex {
+            if i == currentIndex && !progressIsAllDone {
                 textLayer.font = selectedTextFont
                 textLayer.fontSize = (selectedTextFont?.pointSize)!
 
