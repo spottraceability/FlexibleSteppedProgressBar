@@ -163,7 +163,7 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         
         if progressBar == self.progressBarWithDifferentDimensions  {
             if position == FlexibleSteppedProgressBarTextLocation.center {
-                let image = UIImage(named: "truck")
+                let image = UIImage(named: "whiteCheck64")
                 return image
             }
         }
