@@ -33,12 +33,24 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         
         setupProgressBarWithDifferentDimensions()
         
+        self.progressBarWithDifferentDimensions.refreshLayers()
+        
     }
     
+    @IBAction func pressedTestButton(_ sender: Any) {
+        self.progressBarWithDifferentDimensions.currentIndex = 0
+        progressBarWithDifferentDimensions.progressIsAllDone = false
+        
+        self.progressBarWithDifferentDimensions.resetLayers()
+        
+        self.progressBarWithDifferentDimensions.currentIndex = 4
+        progressBarWithDifferentDimensions.progressIsAllDone = true
+        
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.progressBarWithDifferentDimensions.setNeedsDisplay()
+        //self.progressBarWithDifferentDimensions.setNeedsDisplay()
     }
         
     override func didReceiveMemoryWarning() {

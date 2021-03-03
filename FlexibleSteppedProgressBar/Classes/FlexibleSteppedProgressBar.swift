@@ -278,6 +278,53 @@ import CoreGraphics
         self.init(frame:CGRect.zero)
     }
     
+    open func resetLayers() {
+        self.layer.sublayers?.forEach {
+            $0.removeFromSuperlayer()
+        }
+        
+        self._textLayers.removeAll(keepingCapacity: true)
+        self._topTextLayers.removeAll(keepingCapacity: true)
+        self._bottomTextLayers.removeAll(keepingCapacity: true)
+        
+        //re-establish new layers
+        self.backgroundLayer = CAShapeLayer()
+        
+        self.progressLayer = CAShapeLayer()
+        
+        self.selectionLayer = CAShapeLayer()
+        
+        self.clearSelectionLayer = CAShapeLayer()
+                
+        self.selectionCenterLayer = CAShapeLayer()
+        
+        self.roadToSelectionLayer = CAShapeLayer()
+        
+        self.clearCentersLayer = CAShapeLayer()
+        
+        self.layer.addSublayer(self.clearCentersLayer)
+        self.layer.addSublayer(self.backgroundLayer)
+        self.layer.addSublayer(self.progressLayer)
+        self.layer.addSublayer(self.clearSelectionLayer)
+        self.layer.addSublayer(self.selectionCenterLayer)
+        self.layer.addSublayer(self.selectionLayer)
+
+        self.layer.addSublayer(self.roadToSelectionLayer)
+        self.progressLayer.mask = self.maskLayer
+        
+        self.contentMode = UIView.ContentMode.redraw
+        
+    }
+    
+    open func refreshLayers() {
+        
+        self.layer.sublayers?.forEach {
+            $0.setNeedsDisplay()
+            
+        }
+        
+    }
+    
     func commonInit() {
         if currentSelectedTextColor == nil {
             currentSelectedTextColor = selectedBackgoundColor
@@ -315,9 +362,7 @@ import CoreGraphics
             centerLayerTextColor = stepTextColor
         }
         
-        
         self.layer.addSublayer(self.clearCentersLayer)
-
         self.layer.addSublayer(self.backgroundLayer)
         self.layer.addSublayer(self.progressLayer)
         self.layer.addSublayer(self.clearSelectionLayer)
@@ -369,22 +414,22 @@ import CoreGraphics
                 let clearSelectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: clearSelectedRadius)
                 clearSelectionLayer.path = clearSelectedPath.cgPath
                 clearSelectionLayer.fillColor = viewBackgroundColor.cgColor
-                
+            
                 let selectedPath = self._shapePathForSelected(self.centerPoints[currentIndex], aRadius: _radius)
                 selectionLayer.path = selectedPath.cgPath
                 selectionLayer.fillColor = currentSelectedCenterColor.cgColor
             }
             
             
-            let selectedPathCenter = self._shapePathForSelectedPathCenter(self.centerPoints[currentIndex], aRadius: _progressRadius)
-            
             if !progressIsAllDone {
+                let selectedPathCenter = self._shapePathForSelectedPathCenter(self.centerPoints[currentIndex], aRadius: _progressRadius)
+            
                 selectionCenterLayer.path = selectedPathCenter.cgPath
                 selectionCenterLayer.strokeColor = selectedOuterCircleStrokeColor.cgColor
                 selectionCenterLayer.fillColor = UIColor.clear.cgColor
                 selectionCenterLayer.lineWidth = selectedOuterCircleLineWidth
                 selectionCenterLayer.strokeEnd = 1.0
-            }
+           }
         }
 
         self.renderTopTextIndexes()
