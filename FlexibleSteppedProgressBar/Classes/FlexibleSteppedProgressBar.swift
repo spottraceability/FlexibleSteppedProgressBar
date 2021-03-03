@@ -59,6 +59,12 @@ import CoreGraphics
         }
     }
     
+    @objc open var highlightCurrentStepBottomText: Bool = false {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+    
     @objc open var currentSelectedCenterColor: UIColor = UIColor.black
     @objc open var currentSelectedTextColor: UIColor!
     @objc open var currentSelectedCenterTextColor: UIColor! = UIColor.black
@@ -542,7 +548,7 @@ import CoreGraphics
             
             textLayer.contentsScale = UIScreen.main.scale
             
-            if i == currentIndex && !progressIsAllDone {
+            if i == currentIndex && (!progressIsAllDone || highlightCurrentStepBottomText) {
                 textLayer.font = selectedTextFont
                 textLayer.fontSize = (selectedTextFont?.pointSize)!
 

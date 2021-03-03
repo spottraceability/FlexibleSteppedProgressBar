@@ -127,7 +127,8 @@ class ViewController: UIViewController, FlexibleSteppedProgressBarDelegate {
         progressBarWithDifferentDimensions.stepTextFont = UIFont(name: "AvenirNext-Regular", size: 16)
         progressBarWithDifferentDimensions.progressIsAllDone = true
         
-        progressBarWithDifferentDimensions.currentIndex = 4
+        progressBarWithDifferentDimensions.currentIndex = 2
+        progressBarWithDifferentDimensions.highlightCurrentStepBottomText = true
         
     }
     
