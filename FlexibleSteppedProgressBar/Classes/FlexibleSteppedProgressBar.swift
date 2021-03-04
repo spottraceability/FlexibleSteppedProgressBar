@@ -483,18 +483,18 @@ import CoreGraphics
                 textLayer.string = "\(i)"
             }
             
+            textLayer.sizeWidthToFit()
+
             if let image = self.delegate?.progressBar?(self, selectedTextAtIndex: i, position: .center) {
                 
                 if i < currentIndex || progressIsAllDone {
-                    textLayer.string = " "
+                    textLayer.string = nil
                     textLayer.contents = image.cgImage
                     textLayer.contentsGravity = CALayerContentsGravity.resizeAspect
                 }
             }
-            
         
-            textLayer.sizeWidthToFit()
-            
+                
             textLayer.frame = CGRect(x: centerPoint.x - textLayer.bounds.width/2, y: centerPoint.y - textLayer.bounds.height/2, width: textLayer.bounds.width, height: textLayer.bounds.height)
         }
     }
@@ -635,6 +635,7 @@ import CoreGraphics
             textLayer = CATextLayer()
             self._textLayers[index] = textLayer
         }
+        
         self.layer.addSublayer(textLayer)
         
         return textLayer
